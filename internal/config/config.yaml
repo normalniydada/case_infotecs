@@ -1,0 +1,12 @@
+server:
+  host: "localhost"
+  port: 8080
+
+database:
+  host: "localhost"
+  port: 5432
+  dbname: "payment_db"
+  sslmode: "disable"
+  max_idle_conns: 15
+  max_open_conns: 100
+  conn_max_lifetime: 5
