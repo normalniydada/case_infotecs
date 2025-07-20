@@ -1,3 +1,8 @@
+// Package config предоставляет функциональность для загрузки конфигурации приложения
+// из YAML-файлов и переменных окружения. Поддерживается:
+// - Чтение конфигурации из файла config.yaml
+// - Загрузка чувствительных данных из .env файла
+// - Иерархическая структура конфигурации
 package config
 
 import (
@@ -7,28 +12,42 @@ import (
 	"os"
 )
 
+// Config представляет основную структуру конфигурации приложения.
+// Содержит все необходимые настройки для работы сервера и базы данных.
 type Config struct {
-	Server   ServerConfig
-	Database DatabaseConfig
+	Server   ServerConfig   // Настройки HTTP сервера
+	Database DatabaseConfig // Настройки подключения к базе данных
 }
 
+// DatabaseConfig содержит параметры для подключения к базе данных.
+// Позволяет настроить пул соединений и параметры аутентификации.
 type DatabaseConfig struct {
-	Host            string
-	Port            int
-	DBName          string
-	User            string
-	Password        string
-	SSLMode         string
-	MaxIdleConns    int
-	MaxOpenConns    int
-	ConnMaxLifetime int
+	Host            string // Хост базы данных
+	Port            int    // Порт базы данных
+	DBName          string // Имя базы данных
+	User            string // Пользователь БД (загружается из .env)
+	Password        string // Пароль пользователя (загружается из .env)
+	SSLMode         string // Режим SSL (disable, require, verify-full и т.д.)
+	MaxIdleConns    int    // Макс. количество неактивных соединений в пуле
+	MaxOpenConns    int    // Макс. количество открытых соединений
+	ConnMaxLifetime int    // Макс. время жизни соединения в секундах
 }
 
+// ServerConfig содержит параметры HTTP сервера.
 type ServerConfig struct {
-	Host string
-	Port int
+	Host string // Хост для запуска сервера
+	Port int    // Порт для запуска сервера
 }
 
+// NewConfig создает и инициализирует новый объект Config.
+// Загружает конфигурацию в следующем порядке:
+//  1. Пытается загрузить переменные окружения из .env файла
+//  2. Читает основной конфигурационный файл config.yaml
+//  3. Комбинирует настройки из файла и переменных окружения
+//
+// Возвращает:
+//
+//	*Config - указатель на загруженную конфигурацию
 func NewConfig() *Config {
 	if err := godotenv.Load(); err != nil {
 		log.Printf("[WARN] .env the file was not found: %v", err)
