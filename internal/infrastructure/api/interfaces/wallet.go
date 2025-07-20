@@ -5,6 +5,6 @@ import (
 )
 
 type WalletHandler interface {
-	Send(c echo.Context) error
+	Sen(c echo.Context) error
 	Balance(c echo.Context) error
 }
