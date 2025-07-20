@@ -12,6 +12,7 @@ import (
 	"github.com/normalniydada/case_infotecs/internal/infrastructure/api/router"
 	"github.com/normalniydada/case_infotecs/internal/infrastructure/db/postgres"
 	"github.com/normalniydada/case_infotecs/internal/infrastructure/db/postgres/repositories"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 	"log"
 )
@@ -76,7 +77,7 @@ func (a *Application) setupEcho() {
 
 func (a *Application) initWallets(ctx context.Context) error {
 	initializer := NewWalletInitializer(a.walletService)
-	return initializer.InitWallet(ctx, 10, 100.0)
+	return initializer.InitWallet(ctx, 10, decimal.NewFromFloat(100.0))
 }
 
 func (a *Application) Close() {
