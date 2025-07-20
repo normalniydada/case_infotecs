@@ -85,32 +85,29 @@ func (r *walletRepository) Transfer(ctx context.Context, from, to string, amount
 
 func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to string, amount int64) (*models.Wallet,
 	*models.Wallet, error) {
-	var wallets []models.Wallet
+	var sender, receiver models.Wallet
 
 	if err := tx.Clauses(clause.Locking{Strength: clause.LockingStrengthUpdate}).
-		Where("address IN (?, ?)", from, to).
-		Find(&wallets).Error; err != nil {
-		return nil, nil, fmt.Errorf("error blocking wallets: %w", err)
-	}
-
-	if len(wallets) != 2 {
-		return nil, nil, er.ErrWalletNotFound
-	}
-
-	var sender, receiver *models.Wallet
-	for _, wallet := range wallets {
-		if wallet.Address == from {
-			sender = &wallet
-		} else {
-			receiver = &wallet
+		First(&sender, "address = ?", from).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil, er.ErrWalletSenderNotFound
 		}
+		return nil, nil, fmt.Errorf("error blocking sender's wallet: %w", err)
+	}
+
+	if err := tx.Clauses(clause.Locking{Strength: clause.LockingStrengthUpdate}).
+		First(&receiver, "address = ?", to).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil, er.ErrWalletReceiverNotFound
+		}
+		return nil, nil, fmt.Errorf("error blocking receiver's wallet: %w", err)
 	}
 
 	if sender.Balance < amount {
 		return nil, nil, er.ErrNotEnoughMoney
 	}
 
-	return sender, receiver, nil
+	return &sender, &receiver, nil
 }
 
 func (r *walletRepository) updateBalance(tx *gorm.DB, sender, receiver *models.Wallet, amount int64) error {
