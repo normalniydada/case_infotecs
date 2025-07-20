@@ -31,7 +31,7 @@ type ServerConfig struct {
 
 func NewConfig() *Config {
 	if err := godotenv.Load(); err != nil {
-		log.Printf("[WARN] .env файл не был найден: %v", err)
+		log.Printf("[WARN] .env the file was not found: %v", err)
 	}
 
 	v := viper.New()
@@ -40,7 +40,7 @@ func NewConfig() *Config {
 	v.AddConfigPath("./config")
 
 	if err := v.ReadInConfig(); err != nil {
-		log.Fatalf("[ERROR] Ошибка при чтении файла конфигурации: %v", err)
+		log.Fatalf("[ERROR] Error reading configuration file: %v", err)
 	}
 
 	cfg := &Config{
