@@ -37,7 +37,7 @@ func NewConfig() *Config {
 	v := viper.New()
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
-	v.AddConfigPath("internal/config")
+	v.AddConfigPath("./config")
 
 	if err := v.ReadInConfig(); err != nil {
 		log.Fatalf("[ERROR] Ошибка при чтении файла конфигурации: %v", err)
