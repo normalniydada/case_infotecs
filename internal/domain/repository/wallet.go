@@ -6,6 +6,8 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// WalletRepository определяет контракт для работы с хранилищем кошельков.
+// Описывает методы для управления кошельками и операциями перевода средств.
 type WalletRepository interface {
 	CreateWallet(ctx context.Context, wallet *models.Wallet) error
 	Wallet(ctx context.Context, address string) (*models.Wallet, error)
