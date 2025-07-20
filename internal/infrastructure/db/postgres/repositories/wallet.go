@@ -1,26 +1,21 @@
-package postgres
+package repositories
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
+	er "github.com/normalniydada/case_infotecs/internal/domain/errors"
 	"github.com/normalniydada/case_infotecs/internal/domain/models"
+	"github.com/normalniydada/case_infotecs/internal/domain/repository"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-)
-
-var (
-	ErrWalletNotFound = errors.New("кошелек не найден")
-	ErrWalletExists   = errors.New("кошелек уже существует")
-	ErrNotEnoughFunds = errors.New("недостаточно средств на кошельке отправителя")
 )
 
 type walletRepository struct {
 	db *gorm.DB
 }
 
-func NewWalletRepository(db *gorm.DB) *walletRepository {
+func NewWalletRepository(db *gorm.DB) repository.WalletRepository {
 	return &walletRepository{db: db}
 }
 
@@ -35,37 +30,37 @@ func (r *walletRepository) CreateWallet(ctx context.Context, wallet *models.Wall
 			First(&existingWallet).Error
 
 		if err == nil {
-			return ErrWalletExists
+			return er.ErrWalletExists
 		}
 
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return fmt.Errorf("ошибка при проверки существования кошелька: %w", err)
+			return fmt.Errorf("error checking wallet existence: %w", err)
 		}
 
 		if err = tx.Create(wallet).Error; err != nil {
-			return fmt.Errorf("ошибка при создании кошелька: %w", err)
+			return fmt.Errorf("error creating wallet: %w", err)
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		if errors.Is(err, ErrWalletExists) {
-			return ErrWalletExists
+		if errors.Is(err, er.ErrWalletExists) {
+			return er.ErrWalletExists
 		}
-		return fmt.Errorf("ошибка при создании кошелька: %w", err)
+		return fmt.Errorf("error creating wallet: %w", err)
 	}
 
 	return nil
 }
 
-func (r *walletRepository) Wallet(ctx context.Context, address uuid.UUID) (*models.Wallet, error) {
+func (r *walletRepository) Wallet(ctx context.Context, address string) (*models.Wallet, error) {
 	var wallet models.Wallet
 
 	err := r.db.WithContext(ctx).First(&wallet, "address = ?", address).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrWalletNotFound
+			return nil, er.ErrWalletNotFound
 		}
 		return nil, err
 	}
@@ -73,7 +68,7 @@ func (r *walletRepository) Wallet(ctx context.Context, address uuid.UUID) (*mode
 	return &wallet, nil
 }
 
-func (r *walletRepository) Transfer(ctx context.Context, from, to uuid.UUID, amount int64) error {
+func (r *walletRepository) Transfer(ctx context.Context, from, to string, amount int64) error {
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		sender, receiver, err := r.lockAndValidateWallets(tx, from, to, amount)
 		if err != nil {
@@ -88,18 +83,18 @@ func (r *walletRepository) Transfer(ctx context.Context, from, to uuid.UUID, amo
 	})
 }
 
-func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to uuid.UUID, amount int64) (*models.Wallet,
+func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to string, amount int64) (*models.Wallet,
 	*models.Wallet, error) {
 	var wallets []models.Wallet
 
 	if err := tx.Clauses(clause.Locking{Strength: clause.LockingStrengthUpdate}).
 		Where("address IN (?, ?)", from, to).
 		Find(&wallets).Error; err != nil {
-		return nil, nil, fmt.Errorf("ошибка при блокировки кошельков: %w", err)
+		return nil, nil, fmt.Errorf("error blocking wallets: %w", err)
 	}
 
 	if len(wallets) != 2 {
-		return nil, nil, ErrWalletNotFound
+		return nil, nil, er.ErrWalletNotFound
 	}
 
 	var sender, receiver *models.Wallet
@@ -112,7 +107,7 @@ func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to uuid.UUI
 	}
 
 	if sender.Balance < amount {
-		return nil, nil, ErrNotEnoughFunds
+		return nil, nil, er.ErrNotEnoughMoney
 	}
 
 	return sender, receiver, nil
@@ -121,18 +116,18 @@ func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to uuid.UUI
 func (r *walletRepository) updateBalance(tx *gorm.DB, sender, receiver *models.Wallet, amount int64) error {
 	if err := tx.Model(sender).
 		Update("balance", gorm.Expr("balance - ?", amount)).Error; err != nil {
-		return fmt.Errorf("ошибка при списании средств: %w", err)
+		return fmt.Errorf("error while writing off funds: %w", err)
 	}
 
 	if err := tx.Model(receiver).
 		Update("balance", gorm.Expr("balance + ?", amount)).Error; err != nil {
-		return fmt.Errorf("ошибка при зачислении средств: %w", err)
+		return fmt.Errorf("error while crediting funds: %w", err)
 	}
 
 	return nil
 }
 
-func (r *walletRepository) createTransaction(tx *gorm.DB, from, to uuid.UUID, amount int64) error {
+func (r *walletRepository) createTransaction(tx *gorm.DB, from, to string, amount int64) error {
 	transaction := models.Transaction{
 		From:   from,
 		To:     to,
@@ -140,24 +135,14 @@ func (r *walletRepository) createTransaction(tx *gorm.DB, from, to uuid.UUID, am
 	}
 
 	if err := tx.Create(&transaction).Error; err != nil {
-		return fmt.Errorf("ошибка при создании транзакции: %w", err)
+		return fmt.Errorf("error creating transaction: %w", err)
 	}
 
 	return nil
 }
 
-/*func (r *WalletRepository) WalletExists(ctx context.Context, address uuid.UUID) (bool, error) {
-	exists := false
-
-	err := r.db.WithContext(ctx).
-		Model(&models.Wallet{}).
-		Select("count(*) > 0").
-		Where("address = ?", address).
-		Find(&exists).Error
-
-	if err != nil {
-		return false, fmt.Errorf("ошибка проверки существования кошелька: %w", err)
-	}
-
-	return exists, nil
-}*/
+func (r *walletRepository) Count(ctx context.Context) (int64, error) {
+	var count int64
+	err := r.db.WithContext(ctx).Model(&models.Wallet{}).Count(&count).Error
+	return count, err
+}
