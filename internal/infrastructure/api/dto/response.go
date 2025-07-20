@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// TransactionResponse представляет структуру ответа с информацией о транзакции.
+// Используется для сериализации данных о транзакции в API-ответах.
 type TransactionResponse struct {
 	From      string          `json:"sender_address"`
 	To        string          `json:"receiver_address"`
