@@ -1,12 +1,12 @@
 package models
 
 import (
-	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
 type Wallet struct {
 	gorm.Model
-	Address uuid.UUID `gorm:"type:uuid;uniqueIndex;not null"`
-	Balance int64     `gorm:"type:bigint;not null;default:0"`
+	Address string          `gorm:"type:string;uniqueIndex;not null"`
+	Balance decimal.Decimal `gorm:"type:numeric(20,8);not null;default:0"`
 }
