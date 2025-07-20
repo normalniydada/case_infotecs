@@ -5,6 +5,9 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// WalletService определяет контракт сервисного слоя для работы с кошельками.
+// Предоставляет бизнес-логику для управления кошельками и переводами средств.
+// Все методы должны быть безопасны для конкурентного вызова.
 type WalletService interface {
 	Balance(ctx context.Context, address string) (decimal.Decimal, error)
 	TransferMoney(ctx context.Context, from, to string, amount decimal.Decimal) error
