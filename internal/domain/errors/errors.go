@@ -2,7 +2,7 @@ package errors
 
 import "errors"
 
-// Repo
+// Ошибки уровня репозитория (data access layer)
 var (
 	ErrWalletNotFound         = errors.New("wallet not found")
 	ErrWalletSenderNotFound   = errors.New("sender's wallet not found")
@@ -11,14 +11,14 @@ var (
 	ErrNotEnoughMoney         = errors.New("insufficient funds in the sender's wallet")
 )
 
-// Service
+// Ошибки уровня сервиса (business logic layer)
 var (
 	ErrTransactionNotFound = errors.New("no transactions")
 	ErrSameWalletTransfer  = errors.New("impossible to send money to yourself")
 	ErrInvalidAmount       = errors.New("the sum must be positive")
 )
 
-// Handlers
+// Ошибки уровня обработчиков (API layer)
 var (
 	ErrInvalidCount = errors.New("invalid count query-params")
 )
