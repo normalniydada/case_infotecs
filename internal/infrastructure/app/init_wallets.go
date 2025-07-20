@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/normalniydada/case_infotecs/internal/domain/service"
+	"github.com/shopspring/decimal"
 	"log"
 	"sync"
 	"sync/atomic"
@@ -17,7 +18,7 @@ func NewWalletInitializer(walletService service.WalletService) *WalletInitialize
 	return &WalletInitializer{walletService: walletService}
 }
 
-func (wi *WalletInitializer) InitWallet(ctx context.Context, count int, balance float64) error {
+func (wi *WalletInitializer) InitWallet(ctx context.Context, count int, balance decimal.Decimal) error {
 	existingCount, err := wi.walletService.CountWallets(ctx)
 	if err != nil {
 		return err
