@@ -5,6 +5,10 @@ import (
 	"gorm.io/gorm"
 )
 
+// Wallet представляет модель кошелька в системе.
+// Содержит уникальный адрес и текущий баланс.
+// Наследует базовые поля gorm.Model (ID, CreatedAt, UpdatedAt, DeletedAt).
+// Используется для хранения информации о пользовательских кошельках и их балансах.
 type Wallet struct {
 	gorm.Model
 	Address string          `gorm:"type:string;uniqueIndex;not null"`

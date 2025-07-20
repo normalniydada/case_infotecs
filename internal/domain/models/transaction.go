@@ -5,6 +5,9 @@ import (
 	"gorm.io/gorm"
 )
 
+// Transaction представляет модель транзакции между кошельками в системе.
+// Содержит информацию об отправителе, получателе и сумме перевода.
+// Реализует gorm.Model для базовых полей (ID, CreatedAt, UpdatedAt, DeletedAt).
 type Transaction struct {
 	gorm.Model
 	From   string          `gorm:"type:string;not null"`
