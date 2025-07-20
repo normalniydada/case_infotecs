@@ -1,3 +1,4 @@
+// Package handlers предоставляет HTTP-обработчики для API сервиса кошельков.
 package handlers
 
 import (
@@ -11,14 +12,43 @@ import (
 	"net/http"
 )
 
+// walletHandler реализует интерфейс WalletHandler.
+// Обрабатывает HTTP-запросы, связанные с операциями кошельков.
 type walletHandler struct {
 	walletService service.WalletService
 }
 
+// NewWalletHandler создает новый экземпляр обработчика кошельков.
+//
+// Параметры:
+//   - walletService: сервис для работы с кошельками
+//
+// Возвращает:
+//   - interfaces.WalletHandler: реализацию интерфейса обработчика
 func NewWalletHandler(walletService service.WalletService) interfaces.WalletHandler {
 	return &walletHandler{walletService: walletService}
 }
 
+// Send обрабатывает запрос на перевод средств между кошельками.
+// POST /wallets/send
+//
+// Тело запроса (JSON):
+//
+//	{
+//	  "from": "адрес_отправителя",
+//	  "to": "адрес_получателя",
+//	  "amount": "сумма_перевода"
+//	}
+//
+// Возможные ответы:
+//   - 200 OK: {"message": "transaction succeeded"} - успешный перевод
+//   - 400 Bad Request: {"invalid value": "..."} - ошибки валидации:
+//   - неверный формат JSON
+//   - недостаточно средств
+//   - невалидная сумма
+//   - перевод самому себе
+//   - кошелек не найден
+//   - 500 Internal Server Error: {"transaction": "..."} - ошибка сервера
 func (h *walletHandler) Send(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -42,6 +72,16 @@ func (h *walletHandler) Send(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"message": "transaction succeeded"})
 }
 
+// Balance обрабатывает запрос на получение баланса кошелька.
+// GET /wallets/{address}/balance
+//
+// Параметры пути:
+//   - address: адрес кошелька
+//
+// Возможные ответы:
+//   - 200 OK: {"balance": "..."} - текущий баланс
+//   - 404 Not Found: {"wallet error": "..."} - кошелек не найден
+//   - 500 Internal Server Error - ошибка сервера
 func (h *walletHandler) Balance(c echo.Context) error {
 	ctx := c.Request().Context()
 
