@@ -7,6 +7,7 @@ import (
 	er "github.com/normalniydada/case_infotecs/internal/domain/errors"
 	"github.com/normalniydada/case_infotecs/internal/domain/models"
 	"github.com/normalniydada/case_infotecs/internal/domain/repository"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -68,7 +69,7 @@ func (r *walletRepository) Wallet(ctx context.Context, address string) (*models.
 	return &wallet, nil
 }
 
-func (r *walletRepository) Transfer(ctx context.Context, from, to string, amount int64) error {
+func (r *walletRepository) Transfer(ctx context.Context, from, to string, amount decimal.Decimal) error {
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		sender, receiver, err := r.lockAndValidateWallets(tx, from, to, amount)
 		if err != nil {
@@ -83,7 +84,7 @@ func (r *walletRepository) Transfer(ctx context.Context, from, to string, amount
 	})
 }
 
-func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to string, amount int64) (*models.Wallet,
+func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to string, amount decimal.Decimal) (*models.Wallet,
 	*models.Wallet, error) {
 	var sender, receiver models.Wallet
 
@@ -103,14 +104,14 @@ func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to string, 
 		return nil, nil, fmt.Errorf("error blocking receiver's wallet: %w", err)
 	}
 
-	if sender.Balance < amount {
+	if sender.Balance.LessThan(amount) {
 		return nil, nil, er.ErrNotEnoughMoney
 	}
 
 	return &sender, &receiver, nil
 }
 
-func (r *walletRepository) updateBalance(tx *gorm.DB, sender, receiver *models.Wallet, amount int64) error {
+func (r *walletRepository) updateBalance(tx *gorm.DB, sender, receiver *models.Wallet, amount decimal.Decimal) error {
 	if err := tx.Model(sender).
 		Update("balance", gorm.Expr("balance - ?", amount)).Error; err != nil {
 		return fmt.Errorf("error while writing off funds: %w", err)
@@ -124,7 +125,7 @@ func (r *walletRepository) updateBalance(tx *gorm.DB, sender, receiver *models.W
 	return nil
 }
 
-func (r *walletRepository) createTransaction(tx *gorm.DB, from, to string, amount int64) error {
+func (r *walletRepository) createTransaction(tx *gorm.DB, from, to string, amount decimal.Decimal) error {
 	transaction := models.Transaction{
 		From:   from,
 		To:     to,
