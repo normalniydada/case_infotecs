@@ -1,3 +1,6 @@
+// Package dto (Data Transfer Objects) содержит модели для взаимодействия с API.
+// Определяет структуры данных для входящих/исходящих запросов.
+
 package dto
 
 import "github.com/shopspring/decimal"

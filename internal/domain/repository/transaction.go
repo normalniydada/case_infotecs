@@ -1,3 +1,6 @@
+// Package repository определяет интерфейсы для работы с хранилищами данных.
+// Содержит контракты, которые должны реализовывать репозитории приложения.
+
 package repository
 
 import (
@@ -6,7 +9,7 @@ import (
 )
 
 // TransactionRepository определяет контракт для работы с хранилищем транзакций.
-// Описывает методы доступа к данным транзакций между кошельками.
+// Описывает методы доступа к данным транзакций.
 type TransactionRepository interface {
 	LastNTransactions(ctx context.Context, n int) ([]models.Transaction, error)
 }
