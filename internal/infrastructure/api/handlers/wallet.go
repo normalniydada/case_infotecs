@@ -7,6 +7,7 @@ import (
 	"github.com/normalniydada/case_infotecs/internal/domain/service"
 	"github.com/normalniydada/case_infotecs/internal/infrastructure/api/dto"
 	"github.com/normalniydada/case_infotecs/internal/infrastructure/api/interfaces"
+	"github.com/shopspring/decimal"
 	"net/http"
 )
 
@@ -53,5 +54,5 @@ func (h *walletHandler) Balance(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get balance")
 	}
 
-	return c.JSON(http.StatusOK, map[string]float64{"balance": balance})
+	return c.JSON(http.StatusOK, map[string]decimal.Decimal{"balance": balance})
 }
