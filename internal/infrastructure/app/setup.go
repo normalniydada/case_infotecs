@@ -27,13 +27,13 @@ type Application struct {
 
 func setupApplication(ctx context.Context) (*Application, error) {
 	cfg := config.NewConfig()
-	log.Println("[INFO] Конфигурация успешно загружена")
+	log.Println("[INFO] Configuration loaded successfully")
 
 	db, err := postgres.ProvideDBClient(&cfg.Database)
 	if err != nil {
 		return nil, err
 	}
-	log.Println("[INFO] База данных подключена")
+	log.Println("[INFO] The database is connected")
 
 	walletRepo := repositories.NewWalletRepository(db.GetDB())
 	transactionRepo := repositories.NewTransactionRepository(db.GetDB())
@@ -48,9 +48,9 @@ func setupApplication(ctx context.Context) (*Application, error) {
 	app.closers = append(app.closers, func() {
 		if sqlDB, err := db.GetDB().DB(); err == nil {
 			if err := sqlDB.Close(); err != nil {
-				log.Printf("[WARN] Ошибка при закрытии соединения с БД: %v", err)
+				log.Printf("[WARN] Error closing connection to DB: %v", err)
 			} else {
-				log.Println("[INFO] Соединение с БД закрыто")
+				log.Println("[INFO] The connection to the database was closed")
 			}
 		}
 	})
