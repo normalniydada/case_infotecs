@@ -59,12 +59,13 @@ func (h *walletHandler) Send(c echo.Context) error {
 
 	err := h.walletService.TransferMoney(ctx, req.From, req.To, req.Amount)
 	if err != nil {
-		if errors.Is(err, er.ErrNotEnoughMoney) ||
-			errors.Is(err, er.ErrInvalidAmount) ||
+		if errors.Is(err, er.ErrInvalidAmount) ||
 			errors.Is(err, er.ErrSameWalletTransfer) ||
 			errors.Is(err, er.ErrWalletSenderNotFound) ||
 			errors.Is(err, er.ErrWalletReceiverNotFound) {
 			return c.JSON(http.StatusBadRequest, map[string]string{"invalid_value": err.Error()})
+		} else if errors.Is(err, er.ErrNotEnoughMoney) {
+			return c.JSON(http.StatusUnprocessableEntity, map[string]string{"invalid_amount": err.Error()})
 		}
 		return c.JSON(http.StatusInternalServerError, map[string]string{"transfer_error": "transaction failed and canceled"})
 	}
