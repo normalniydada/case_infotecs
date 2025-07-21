@@ -93,6 +93,7 @@ docker-compose up --build
 * `200 OK` - успешный перевод
 * `400 Bad Request` - неверный формат запроса
 * `404 Not Found` - кошелек отправителя/получателя не найден
+* `422 Unprocessable Entity` - недостаточно средств
 * `500 Internal Server Error` - серверная ошибка  
 
 ### **`GET /api/transactions?count=N`**: просмотр истории последних N транзакций  
