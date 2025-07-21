@@ -54,7 +54,7 @@ docker-compose up db -d
 go run cmd/main.go
 ```
 
-### Cборка Docker контейнера
+### Cборка Docker-контейнера
 Необходимо в файле `config/config.yaml` внести следующие изменения
 ```
 database:
