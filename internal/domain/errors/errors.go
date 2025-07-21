@@ -23,7 +23,7 @@ var (
 	ErrWalletExists = errors.New("wallet already exists")
 
 	// ErrNotEnoughMoney возвращается при недостаточном балансе для перевода.
-	// HTTP-аналог: 400 Bad Request
+	// HTTP-аналог: 422 Unprocessable Entity
 	ErrNotEnoughMoney = errors.New("insufficient funds in the sender's wallet")
 )
 
