@@ -115,6 +115,8 @@ docker-compose up --build
    * `400 Not Found` - кошелек не найден
    * `500 Internal Server Error` - серверная ошибка
 
+## Структура проекта 
+
 
 
 
