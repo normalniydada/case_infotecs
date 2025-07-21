@@ -95,7 +95,7 @@ docker-compose up --build
 * `404 Not Found` - кошелек отправителя/получателя не найден
 * `500 Internal Server Error` - серверная ошибка  
 
-* **`GET /api/transactions?count=N`**: просмотр истории последних N транзакций  
+#### - **`GET /api/transactions?count=N`**: просмотр истории последних N транзакций  
     
 Параметры: 
 * `count` - количество возвращаемых транзакций (N)
@@ -105,9 +105,11 @@ docker-compose up --build
 * `400 Bad Requset` - неверный параметр
 * `500 Internal Server Error` - серверная ошибка  
 
-* **`GET /api/wallet/{address}/balance`**: проверка баланса кошелька**  
+#### - **`GET /api/wallet/{address}/balance`**: проверка баланса кошелька**  
+
 Параметры пути:
 * `address` - идентификатор (адрес) кошелька
+  
 Коды ответов:
 * `200 OK` - успешный запрос
 * `400 Not Found` - кошелек не найден
