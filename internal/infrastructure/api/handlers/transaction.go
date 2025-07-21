@@ -52,9 +52,9 @@ func (h *transactionHandler) Last(c echo.Context) error {
 	transactions, err := h.transactionService.LastNTransactions(ctx, count)
 	if err != nil {
 		if errors.Is(err, er.ErrTransactionNotFound) {
-			return c.JSON(http.StatusNotFound, map[string]string{"no transactions": er.ErrTransactionNotFound.Error()})
+			return c.JSON(http.StatusNotFound, map[string]string{"transactions": er.ErrTransactionNotFound.Error()})
 		}
-		return c.JSON(http.StatusInternalServerError, map[string]string{"transaction error:": "could not fetch transactions"})
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error:": "could not fetch transactions"})
 	}
 
 	// Успешный ответ
