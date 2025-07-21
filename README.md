@@ -55,6 +55,13 @@ go run cmd/main.go
 ```
 
 ### Docker
+Перед сборкой Docker-контейнера необходимо в файле `config/config.yaml` внести следующие изменения: 
+```
+database:
+  host: "localhost" # заменить на "db"
+```
+
+Сборка
 ```bash
 # сборка контейнера с приложением
 docker-compose up --build
