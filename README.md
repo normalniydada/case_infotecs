@@ -43,7 +43,29 @@
 ### Вспомогательные пакеты
 - [Viper](https://github.com/spf13/viper) - управление конфигурацией
 - [Godotenv](https://github.com/joho/godotenv) - загрузка переменных окружения из .env файла
-- [GoDoc](https://pkg.go.dev/golang.org/x/tools/cmd/godoc) - генерация документации 
+- [GoDoc](https://pkg.go.dev/golang.org/x/tools/cmd/godoc) - генерация документации
+
+## Запуск
+
+### Установка проекта
+```bash
+# установка проекта
+git clone github.com/normalniydada/case_infotecs
+cd case_infotecs
+
+# запуск контейнера с PostgreSQL
+docker-compose up db -d
+
+# запуск проекта
+go run cmd/main.go
+```
+
+
+
+
+
+
+
 
 
 
