@@ -66,7 +66,7 @@ go run cmd/main.go
 Необходимо в файле `config/config.yaml` внести следующие изменения:
 ```
 database:
-  host: "localhost" -> заменить на "db"
+  host: "localhost" # -> заменить на "db"
 ```
 
 Далее в терминале ввести команду:
@@ -117,8 +117,62 @@ docker-compose up --build
    * `500 Internal Server Error` - серверная ошибка
 
 ## Структура проекта 
+```
+case_infotecs/
+├──cmd/
+│  └──main.go                        # Точка входа в приложение
+├──config/                           # Конфигурация приложения
+│  ├──config.go                      # Загрузка конфигурации (env, yaml)
+│  └──config.yaml                    # Файл-конфигурации (настройки)
+└──internal/         
+   ├──application/                   # Бизнес-логика приложения (сервисный слой)
+   │  ├──transaction/                # Логика работы с транзакциями
+   │  │  └──transaction.go           # Получение списка транзакций
+   │  └──wallet/                     # Операции с кошельком
+   │     └──wallet.go                # Баланс, перевод денежных средств
+   ├──domain/                        # Доменный слой
+   │  ├──errors/
+   │  │  └──errors.go                # Кастомные ошибки (сервисный слой + инфраструктрный)
+   │  ├──models/                     # Сущности предметной области
+   │  │  ├──transaction.go           # Модель транзакции
+   │  │  └──wallet.go                # Модель кошелька
+   │  ├──repository/                 # Интерфейсы репозиториев
+   │  │  ├──transaction.go
+   │  │  └──wallet.go
+   │  └──service/                    # Интерфейсы сервисов 
+   │     ├──transaction.go
+   │     └──wallet.go
+   ├──infrastructure/                # Инфраструктурный сой 
+   │  ├──app/                        # Инициализация приложения
+   │  │  ├──app.go                   # Логика запуска приложения
+   │  │  ├──init_wallets.go          # Изначальная генерация 10 кошельков
+   │  │  ├──server.go                # Настройка HTTP-сервера
+   │  │  └──setup.go                 # Настройка окружения 
+   │  └──db/    
+   │     └──postgres/                # PostgreSQL-реализация
+   │        ├──repositories/         # Репозитории для работы с БД    
+   │        │  ├──transaction.go     
+   │        │  └──wallet.go
+   │        ├──client.go             # Клиент БД + автомиграция
+   │        ├──connection.go         # Подключение к БД
+   │        ├──database.go           # Структура
+   │        └──provider.go           # Провайдер 
+   └──presentation/                  # Слой представления
+      └──api/                        # Транспорт
+         ├──dto/                     # Структуры входящих запросов + формат ответов
+         │  ├──request.go
+         │  └──response.go
+         ├──handlers/                # HTTP - обработчик
+         │  ├──transaction.go        # GET /api/transactions?count=N
+         │  └──wallet.go             # GET /api/wallet/{address}/balance + POST /api/send
+         ├──interfaces/              # Интерфейсы handlers 
+         │  ├──transaction.go
+         │  └──wallet.go
+         └──router/                  # Маршрутизация
+            └──router.go
+```   
 
-
+      
 
 
 
