@@ -39,9 +39,16 @@
 - [Godotenv](https://github.com/joho/godotenv) - загрузка переменных окружения из .env файла
 - [GoDoc](https://pkg.go.dev/golang.org/x/tools/cmd/godoc) - генерация документации
 
-## Запуск
+## Установка и запуск
 
-### Установка проекта
+### Требования
+
+* Go 1.21+
+* Docker 20.10+
+* PostgreSQL 15+
+
+
+### Локальная разработка
 ```bash
 # установка проекта
 git clone github.com/normalniydada/case_infotecs
