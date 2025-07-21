@@ -94,7 +94,8 @@ docker-compose up --build
 {
     "message": "transaction succeeded"
 }
-* `GET /api/transactions?count=N`: просмотр истории последних N транзакций
+```
+* **`GET /api/transactions?count=N`: просмотр истории последних N транзакций**
 * `GET /api/wallet/{address}/balance`: проверка баланса кошелька 
 
 
