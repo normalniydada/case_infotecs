@@ -3,7 +3,7 @@ server:
   port: 8080
 
 database:
-  host: "localhost"
+  host: "localhost" # заменить на "db" для запуска внутри Docker-контейнера
   port: 5432
   dbname: "payment"
   sslmode: "disable"
