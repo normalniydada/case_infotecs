@@ -61,7 +61,7 @@ database:
   host: "localhost" # заменить на "db"
 ```
 
-Сборка
+Сборка Docker-контейнера происходит при помощи docker-compose
 ```bash
 # сборка контейнера с приложением
 docker-compose up --build
