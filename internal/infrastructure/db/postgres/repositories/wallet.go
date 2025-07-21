@@ -1,3 +1,5 @@
+// Package repositories содержит реализации репозиториев для работы с хранилищами данных.
+// Включает конкретные реализации интерфейсов доменного слоя.
 package repositories
 
 import (
@@ -12,14 +14,34 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+// walletRepository реализует интерфейс WalletRepository для работы с кошельками в PostgreSQL.
+// Обеспечивает безопасное выполнение операций с блокировками и транзакциями.
 type walletRepository struct {
-	db *gorm.DB
+	db *gorm.DB // Экземпляр GORM для работы с БД
 }
 
+// NewWalletRepository создает новый экземпляр репозитория кошельков.
+//
+// Параметры:
+//   - db: подключение к БД (*gorm.DB)
+//
+// Возвращает:
+//   - repository.WalletRepository: реализацию интерфейса репозитория
 func NewWalletRepository(db *gorm.DB) repository.WalletRepository {
 	return &walletRepository{db: db}
 }
 
+// CreateWallet создает новый кошелек в базе данных.
+// Выполняется в транзакции с проверкой уникальности адреса.
+//
+// Параметры:
+//   - ctx: контекст выполнения
+//   - wallet: указатель на создаваемый кошелек
+//
+// Возвращает:
+//   - error: ошибка при создании:
+//   - er.ErrWalletExists: если кошелек с таким адресом уже существует
+//   - другие ошибки базы данных
 func (r *walletRepository) CreateWallet(ctx context.Context, wallet *models.Wallet) error {
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var existingWallet models.Wallet
@@ -55,6 +77,17 @@ func (r *walletRepository) CreateWallet(ctx context.Context, wallet *models.Wall
 	return nil
 }
 
+// Wallet возвращает кошелек по его адресу.
+//
+// Параметры:
+//   - ctx: контекст выполнения
+//   - address: адрес кошелька
+//
+// Возвращает:
+//   - *models.Wallet: найденный кошелек
+//   - error: ошибка при поиске:
+//   - er.ErrWalletNotFound: если кошелек не существует
+//   - другие ошибки базы данных
 func (r *walletRepository) Wallet(ctx context.Context, address string) (*models.Wallet, error) {
 	var wallet models.Wallet
 
@@ -69,6 +102,21 @@ func (r *walletRepository) Wallet(ctx context.Context, address string) (*models.
 	return &wallet, nil
 }
 
+// Transfer выполняет перевод средств между кошельками.
+// Операция выполняется атомарно в транзакции.
+//
+// Параметры:
+//   - ctx: контекст выполнения
+//   - from: адрес кошелька-отправителя
+//   - to: адрес кошелька-получателя
+//   - amount: сумма перевода
+//
+// Возвращает:
+//   - error: ошибка при переводе:
+//   - er.ErrWalletSenderNotFound: отправитель не найден
+//   - er.ErrWalletReceiverNotFound: получатель не найден
+//   - er.ErrNotEnoughMoney: недостаточно средств
+//   - другие ошибки базы данных
 func (r *walletRepository) Transfer(ctx context.Context, from, to string, amount decimal.Decimal) error {
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		sender, receiver, err := r.lockAndValidateWallets(tx, from, to, amount)
@@ -84,6 +132,8 @@ func (r *walletRepository) Transfer(ctx context.Context, from, to string, amount
 	})
 }
 
+// lockAndValidateWallets блокирует и проверяет кошельки для перевода.
+// Внутренний метод, используется в Transfer.
 func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to string, amount decimal.Decimal) (*models.Wallet,
 	*models.Wallet, error) {
 	var sender, receiver models.Wallet
@@ -111,6 +161,8 @@ func (r *walletRepository) lockAndValidateWallets(tx *gorm.DB, from, to string, 
 	return &sender, &receiver, nil
 }
 
+// updateBalance обновляет балансы кошельков после перевода.
+// Внутренний метод, используется в Transfer.
 func (r *walletRepository) updateBalance(tx *gorm.DB, sender, receiver *models.Wallet, amount decimal.Decimal) error {
 	if err := tx.Model(sender).
 		Update("balance", gorm.Expr("balance - ?", amount)).Error; err != nil {
@@ -125,6 +177,8 @@ func (r *walletRepository) updateBalance(tx *gorm.DB, sender, receiver *models.W
 	return nil
 }
 
+// createTransaction создает запись о транзакции.
+// Внутренний метод, используется в Transfer.
 func (r *walletRepository) createTransaction(tx *gorm.DB, from, to string, amount decimal.Decimal) error {
 	transaction := models.Transaction{
 		From:   from,
@@ -139,6 +193,14 @@ func (r *walletRepository) createTransaction(tx *gorm.DB, from, to string, amoun
 	return nil
 }
 
+// Count возвращает общее количество кошельков в системе.
+//
+// Параметры:
+//   - ctx: контекст выполнения
+//
+// Возвращает:
+//   - int64: количество кошельков
+//   - error: ошибка при подсчете
 func (r *walletRepository) Count(ctx context.Context) (int64, error) {
 	var count int64
 	err := r.db.WithContext(ctx).Model(&models.Wallet{}).Count(&count).Error
