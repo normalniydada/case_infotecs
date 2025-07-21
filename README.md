@@ -79,9 +79,9 @@ docker-compose up --build
 
 Сервер RESTful API работает по адресу `http://127.0.0.1:8080`. Он предоставляют следующие endpoints:
 
-* `POST /api/send`: перевод средств между кошельками
+* **`POST /api/send`: перевод средств между кошельками**
     
-**Пример запроса (json):**  
+Пример запроса (json):  
 ```
 {
     "from" : "e240d825d255af751f5f55af8d9671beabdf2236c0a3b4e2639b3e182d994c88", # <- кошелек отправителя
@@ -89,14 +89,8 @@ docker-compose up --build
     "amount" : 3.50 # <- сумма перевода
 }
 ```  
-**Пример ответа (200 OK):**
-```
-{
-    "message": "transaction succeeded"
-}
-```
 * **`GET /api/transactions?count=N`: просмотр истории последних N транзакций**
-* `GET /api/wallet/{address}/balance`: проверка баланса кошелька 
+* **`GET /api/wallet/{address}/balance`: проверка баланса кошелька**
 
 
 
