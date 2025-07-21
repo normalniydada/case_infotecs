@@ -1,6 +1,17 @@
 version: '3.1'
 
 services:
+  app:
+    build: .
+    container_name: infotecs_container
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
   db:
     image: postgres:latest
     restart: always
@@ -8,13 +19,13 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: normalniy
       POSTGRES_DB: payment
-      PGDATA: /var/lib/postgres/data/
+      PGDATA: /var/lib/postgresql/data
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgres/data/
+      - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d todolist_db"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d payment"]
       interval: 5s
       timeout: 5s
       retries: 5
