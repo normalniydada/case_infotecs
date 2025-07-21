@@ -1,5 +1,4 @@
 // Package interfaces определяет контракты для HTTP-обработчиков API.
-
 package interfaces
 
 import (

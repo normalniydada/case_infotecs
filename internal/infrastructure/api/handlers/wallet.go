@@ -1,5 +1,4 @@
 // Package handlers предоставляет HTTP-обработчики для API сервиса кошельков.
-
 package handlers
 
 import (
