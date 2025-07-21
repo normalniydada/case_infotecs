@@ -88,7 +88,12 @@ docker-compose up --build
     "to" : "e240d825d255af751f5f55af8d9671beabdf2236c0a3b4e2639b3e182d994c89", # <- кошелек получателя
     "amount" : 3.50 # <- сумма перевода
 }
+```  
+**Пример ответа (200 OK):**
 ```
+{
+    "message": "transaction succeeded"
+}
 * `GET /api/transactions?count=N`: просмотр истории последних N транзакций
 * `GET /api/wallet/{address}/balance`: проверка баланса кошелька 
 
