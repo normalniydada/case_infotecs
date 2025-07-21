@@ -1,1 +1,1 @@
-# Go RESTful API Payment System
+# Go RESTful API Платежной системы
