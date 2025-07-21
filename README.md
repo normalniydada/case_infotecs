@@ -61,9 +61,8 @@ go run cmd/main.go
 ```
 
 ### Docker
-Сборка контейнера с приложением
 ```bash
-# сборка
+# сборка контейнера с приложением
 docker-compose up --build
 ```
 
