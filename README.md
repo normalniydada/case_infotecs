@@ -93,9 +93,9 @@ docker-compose up --build
 * `200 OK` - успешный перевод
 * `400 Bad Request` - неверный формат запроса
 * `404 Not Found` - кошелек отправителя/получателя не найден
-* `500 Internal Server Error` - серверная ошибка 
+* `500 Internal Server Error` - серверная ошибка  
 
-* **`GET /api/transactions?count=N`**: просмотр истории последних N транзакций
+* **`GET /api/transactions?count=N`**: просмотр истории последних N транзакций  
 Параметры: 
 * `count` - количество возвращаемых транзакций (N)  
 Коды ответов: 
