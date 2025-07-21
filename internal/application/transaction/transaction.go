@@ -8,7 +8,7 @@ import (
 	er "github.com/normalniydada/case_infotecs/internal/domain/errors"
 	"github.com/normalniydada/case_infotecs/internal/domain/repository"
 	"github.com/normalniydada/case_infotecs/internal/domain/service"
-	"github.com/normalniydada/case_infotecs/internal/infrastructure/api/dto"
+	"github.com/normalniydada/case_infotecs/internal/presentation/api/dto"
 )
 
 // transactionService реализует интерфейс TransactionService.

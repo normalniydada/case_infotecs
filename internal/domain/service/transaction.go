@@ -4,7 +4,7 @@ package service
 
 import (
 	"context"
-	"github.com/normalniydada/case_infotecs/internal/infrastructure/api/dto"
+	"github.com/normalniydada/case_infotecs/internal/presentation/api/dto"
 )
 
 // TransactionService определяет контракт сервисного слоя для работы с транзакциями.

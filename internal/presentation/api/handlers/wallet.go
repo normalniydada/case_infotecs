@@ -6,8 +6,8 @@ import (
 	"github.com/labstack/echo/v4"
 	er "github.com/normalniydada/case_infotecs/internal/domain/errors"
 	"github.com/normalniydada/case_infotecs/internal/domain/service"
-	"github.com/normalniydada/case_infotecs/internal/infrastructure/api/dto"
-	"github.com/normalniydada/case_infotecs/internal/infrastructure/api/interfaces"
+	"github.com/normalniydada/case_infotecs/internal/presentation/api/dto"
+	"github.com/normalniydada/case_infotecs/internal/presentation/api/interfaces"
 	"github.com/shopspring/decimal"
 	"net/http"
 )

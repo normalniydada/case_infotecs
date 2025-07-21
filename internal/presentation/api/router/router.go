@@ -4,7 +4,7 @@ package router
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/normalniydada/case_infotecs/internal/infrastructure/api/interfaces"
+	interfaces2 "github.com/normalniydada/case_infotecs/internal/presentation/api/interfaces"
 )
 
 // NewRouter инициализирует маршруты API и связывает их с обработчиками.
@@ -23,7 +23,7 @@ import (
 // Группировка:
 //
 //	Все маршруты префиксируются /api для версионирования и разделения API.
-func NewRouter(e *echo.Echo, walletHandler interfaces.WalletHandler, transactionHandler interfaces.TransactionHandler) {
+func NewRouter(e *echo.Echo, walletHandler interfaces2.WalletHandler, transactionHandler interfaces2.TransactionHandler) {
 	api := e.Group("/api")
 	{
 		api.GET("/wallet/:address/balance", walletHandler.Balance)
